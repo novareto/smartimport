@@ -22,6 +22,8 @@ setup(name='smartimport',
           'kombu',
           'amqp',
           'lxml',
+          'sqlalchemy',
+          'psycopg2',
           # -*- Extra requirements: -*-
       ],
       entry_points="""

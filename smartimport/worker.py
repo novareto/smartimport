@@ -8,6 +8,14 @@ from lxml import etree
 from StringIO import StringIO
 from kombu.mixins import ConsumerMixin
 from kombu.log import get_logger
+from sqlalchemy import create_engine, MetaData, Table
+
+
+engine = create_engine('postgresql+psycopg2://asd:asd@localhost/dale')
+metadata = MetaData(bind=engine)
+edokumente = Table('edokimp', metadata, autoload=True, autoload_with=engine)
+
+
 
 logger = get_logger(__name__)
 
@@ -30,9 +38,23 @@ class Worker(ConsumerMixin):
                 d[leaf.tag] = leaf.text.strip()
         return d
 
+    def inDB(self, data):
+        data['edokimpid'] = 1
+        columns = [x.name for x in edokumente._columns]
+        for key in data.keys():
+            if key not in columns:
+                data.pop(key)
+        import pdb; pdb.set_trace()
+        conn = engine.connect()
+        ins = edokumente.insert(values=data)
+        dd = conn.execute(ins)
+        print "ROWCOUNT-->", dd.rowcount
+
     def run_task(self, body, message):
         try:
+            import pdb; pdb.set_trace()
             data_dict = self.asDict(body['content'])
+            self.inDB(data_dict)
             message.ack()
         except StandardError, e:
             logger.error('task raised exception: %r', e)
