@@ -1,0 +1,12 @@
+#!/Users/ck/work/smi/smartimport/../bin/python
+
+import sys
+sys.path[0:0] = [
+  '/Users/ck/.buildout/eggs/zc.buildout-2.11.0-py2.7.egg',
+  '/Users/ck/work/smi/lib/python2.7/site-packages',
+  ]
+
+import zc.buildout.buildout
+
+if __name__ == '__main__':
+    sys.exit(zc.buildout.buildout.main())

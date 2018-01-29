@@ -1,0 +1,25 @@
+#!/Users/ck/work/smi/smartimport/../bin/python
+
+import sys
+sys.path[0:0] = [
+  '/Users/ck/work/smi/smartimport',
+  '/Users/ck/work/smi/lib/python2.7/site-packages',
+  '/Users/ck/.buildout/eggs/pdbpp-0.9.2-py2.7.egg',
+  '/Users/ck/.buildout/eggs/Pygments-2.2.0-py2.7.egg',
+  '/Users/ck/.buildout/eggs/wmctrl-0.3-py2.7.egg',
+  '/Users/ck/.buildout/eggs/fancycompleter-0.8-py2.7.egg',
+  '/Users/ck/.buildout/eggs/pyrepl-0.8.4-py2.7.egg',
+  '/Users/ck/work/smi/lib/python2.7/site-packages/psycopg2-2.7.3.2-py2.7-macosx-10.13-x86_64.egg',
+  '/Users/ck/work/smi/lib/python2.7/site-packages/SQLAlchemy-1.2.2-py2.7-macosx-10.13-x86_64.egg',
+  '/Users/ck/work/smi/lib/python2.7/site-packages/lxml-4.1.1-py2.7-macosx-10.13-x86_64.egg',
+  '/Users/ck/work/smi/lib/python2.7/site-packages/amqp-2.2.2-py2.7.egg',
+  '/Users/ck/work/smi/lib/python2.7/site-packages/kombu-4.1.0-py2.7.egg',
+  '/Users/ck/work/smi/lib/python2.7/site-packages/click-6.7-py2.7.egg',
+  '/Users/ck/work/smi/lib/python2.7/site-packages/Logbook-1.1.0-py2.7-macosx-10.13-x86_64.egg',
+  '/Users/ck/work/smi/lib/python2.7/site-packages/vine-1.1.4-py2.7.egg',
+  ]
+
+import smartimport.importer
+
+if __name__ == '__main__':
+    sys.exit(smartimport.importer.main())

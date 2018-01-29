@@ -5,12 +5,12 @@
 from kombu import Connection
 from .importer import dale_queue
 from .utils import log
-from lxml import etree
-from sqlalchemy.sql import select
-from StringIO import StringIO
+from .converter import as_dict
+
 from kombu.mixins import ConsumerMixin
 from kombu.log import get_logger
 from sqlalchemy import create_engine, MetaData, Table
+from sqlalchemy.sql import select
 
 
 engine = create_engine('postgresql+psycopg2://dale:dale@localhost/dale')
@@ -34,14 +34,6 @@ class Worker(ConsumerMixin):
                          accept=['pickle', 'json'],
                          callbacks=[self.run_task])]
 
-    def asDict(self, content):
-        d = {}
-        root = etree.parse(StringIO(content)).getroot()
-        for leaf in root.iter():
-            if leaf.text != "\n" and leaf.text is not None:
-                d[leaf.tag] = leaf.text.strip()
-        return d
-
     def getNextNumber(self):
         return len(self.db_conn.execute(select([edokumente])).fetchall()) + 2
 
@@ -58,13 +50,13 @@ class Worker(ConsumerMixin):
     def run_task(self, body, message):
         try:
             log.info('Receiving NEW MESSAGE')
-            data_dict = self.asDict(body['content'])
+            data_dict = as_dict(body['content'])
             log.info('TO DICT WORKS')
+            import pdb; pdb.set_trace()
             self.inDB(data_dict)
             log.info('TO DB WORKS')
             message.ack()
         except Exception, e:
-            import pdb; pdb.set_trace()
             logger.error('task raised exception: %r', e)
 
 

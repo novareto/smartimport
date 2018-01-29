@@ -26,6 +26,7 @@ setup(name='smartimport',
           'sqlalchemy',
           'psycopg2',
           'pdbpp',
+          'pytest',
           # -*- Extra requirements: -*-
       ],
       entry_points="""
