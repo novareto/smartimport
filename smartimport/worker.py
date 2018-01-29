@@ -4,14 +4,16 @@
 
 from kombu import Connection
 from .importer import dale_queue
+from .utils import log
 from lxml import etree
+from sqlalchemy.sql import select
 from StringIO import StringIO
 from kombu.mixins import ConsumerMixin
 from kombu.log import get_logger
 from sqlalchemy import create_engine, MetaData, Table
 
 
-engine = create_engine('postgresql+psycopg2://asd:asd@localhost/dale')
+engine = create_engine('postgresql+psycopg2://dale:dale@localhost/dale')
 metadata = MetaData(bind=engine)
 edokumente = Table('edokimp', metadata, autoload=True, autoload_with=engine)
 
@@ -20,10 +22,12 @@ edokumente = Table('edokimp', metadata, autoload=True, autoload_with=engine)
 logger = get_logger(__name__)
 
 
+
 class Worker(ConsumerMixin):
 
     def __init__(self, connection):
         self.connection = connection
+        self.db_conn = engine.connect()
 
     def get_consumers(self, Consumer, channel):
         return [Consumer(queues=[dale_queue, ],
@@ -38,27 +42,30 @@ class Worker(ConsumerMixin):
                 d[leaf.tag] = leaf.text.strip()
         return d
 
+    def getNextNumber(self):
+        return len(self.db_conn.execute(select([edokumente])).fetchall()) + 2
+
     def inDB(self, data):
-        data['edokimpid'] = 1
+        data['edokimp_id'] = self.getNextNumber()
         columns = [x.name for x in edokumente._columns]
         for key in data.keys():
             if key not in columns:
                 data.pop(key)
-        import pdb; pdb.set_trace()
-        conn = engine.connect()
         ins = edokumente.insert(values=data)
-        dd = conn.execute(ins)
+        dd = self.db_conn.execute(ins)
         print "ROWCOUNT-->", dd.rowcount
 
     def run_task(self, body, message):
         try:
-            import pdb; pdb.set_trace()
+            log.info('Receiving NEW MESSAGE')
             data_dict = self.asDict(body['content'])
+            log.info('TO DICT WORKS')
             self.inDB(data_dict)
+            log.info('TO DB WORKS')
             message.ack()
-        except StandardError, e:
+        except Exception, e:
+            import pdb; pdb.set_trace()
             logger.error('task raised exception: %r', e)
-            print e
 
 
 def main():

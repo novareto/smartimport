@@ -18,12 +18,14 @@ setup(name='smartimport',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
+          'logbook',
           'click',
           'kombu',
           'amqp',
           'lxml',
           'sqlalchemy',
           'psycopg2',
+          'pdbpp',
           # -*- Extra requirements: -*-
       ],
       entry_points="""
